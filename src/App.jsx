@@ -8,8 +8,9 @@ import SImage from './image/Image'
 import Body from './body/Body'
 import Footer from './footer/Footer'
 import { Outlet } from 'react-router-dom'
-import CartProvider from './cart/CartContext'
-import ProductDataProvider from './cart/ProductData'
+// import CartProvider from './cart/CartContext'
+// import ProductDataProvider from './cart/ProductData'
+import PopUp from './cart/Popup'
 
 
 // import './App.css'
@@ -17,14 +18,14 @@ import ProductDataProvider from './cart/ProductData'
 function App() {
   return (
     <>
-     <CartProvider>
-      
+     {/* <CartProvider> */}
+      <PopUp/>
       <Header/>
       <Navigation/>
       <Outlet/>
       <Footer/> 
      
-      </CartProvider>
+      {/* </CartProvider> */}
       
     </>
   )

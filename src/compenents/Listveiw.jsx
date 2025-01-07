@@ -1,19 +1,25 @@
 import React from 'react';
-import { CardContext } from '../cart/CartContext';
-import { useContext } from 'react';
+// import { CardContext } from '../cart/CartContext';
+// import { useContext } from 'react';
 import styled from 'styled-components';
-import { useData } from '../cart/ProductData';
+// import { useData } from '../cart/ProductData';
+
+import { useDispatch ,useSelector} from 'react-redux';
+import { addToCart} from '../slice/addSlice';
+import { NavLink } from 'react-router-dom';
 
 
 
 const Listveiw = () => {
-    const {products}=useData();
-    const cart=useContext(CardContext)
+    // const {products}=useData();
+    // const cart=useContext(CardContext)
+         const carts=useSelector((state)=>state.products.productList)
+    const dispatch=useDispatch()
     return(
         <>
         <List>
              <div className="flexs">
-        {products.map((d,idx)=>{
+        {carts.map((d,idx)=>{
             return (
                 <div className="hr" key={idx}>
                <div className="divs" >
@@ -23,7 +29,7 @@ const Listveiw = () => {
                     
                       
                   
-                     <img src={d.img} alt="" /> 
+                     <img src={d.img[0]} alt="" /> 
                    
   
     
@@ -60,16 +66,19 @@ const Listveiw = () => {
  </div> 
  <div className="pika">
  <div className="items">
- { cart.getProductQuantity (d.id)> 0 ? 
-                      <>
-                           <button className='btns' onClick={() => cart.addOneToCart(d.id)}>{d.btnn}</button>
-                                 
-                                </>
-                                
-                       :
-                       <button className='btns' onClick={() => cart.addOneToCart(d.id)}>{d.btnn}</button>
-                      
-                     }
+                       
+
+
+
+                       <NavLink to={`/addtocart/${d._id}`}>
+                                     <button
+                                       className="btns"
+                                       onClick={() => dispatch(addToCart(d._id))}
+                                     >
+                                       {d.btnn}
+                                     </button>
+                         </NavLink>
+                     
                       
                          </div>
                          <div className="hiis">

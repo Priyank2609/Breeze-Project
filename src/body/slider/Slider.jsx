@@ -3,72 +3,26 @@ import styled from 'styled-components';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { CardContext } from '../../cart/CartContext';
-import { useContext } from 'react';
+// import { CardContext } from '../../cart/CartContext';
+// import { useContext } from 'react';
+import {useSelector,useDispatch} from "react-redux"
+ import { NavLink } from 'react-router-dom';
+import { addProductToCart, getNav, getPopUp, getTotalCost } from '../../slice/addSlice';
 
-const data=[
-  {
-    id:11,
-    img:"https://breeze.swissupdemo.com/media/catalog/product/cache/9935963157b6c43f963afdd068a44aa4/m/b/mb01-blue-0_1.jpg",
-    btnn:"Add to cart",
-    like:"Joust Duffle Bag On Sale 2",
-    price:"$34.00"
-  },
-  {
-    id:12,
-    img:"https://breeze.swissupdemo.com/media/catalog/product/cache/9935963157b6c43f963afdd068a44aa4/w/g/wg02-bk-0.jpg",
-    btnn:"Add to cart",
-    like:"didi sport watch",
-    price:"$92.00"
-  },
-  {
-    id:13,
-    img:"https://breeze.swissupdemo.com/media/catalog/product/cache/1974c3cab1e7ec248d03121d6f6496b0/w/g/wg03-gr-0.jpg",
-    btnn:"Add to cart",
-    like:"clamber watch",
-    price:"$54.00"
-  },
-  {
-    id:14,
-    img:"https://breeze.swissupdemo.com/media/catalog/product/cache/1974c3cab1e7ec248d03121d6f6496b0/w/g/wg01-bk-0.jpg",
-    btnn:"Add to cart",
-    like:"bolo sport watch",
-    price:"$49.00"
-  },
-  {
-    id:15,
-    img:"https://breeze.swissupdemo.com/media/catalog/product/cache/1974c3cab1e7ec248d03121d6f6496b0/w/g/wg01-bk-0.jpg",
-    btnn:"Add to cart",
-    like:"didi sport watch",
-    price:"$34.00"
-  },
-  {
-    id:16,
-    img:"https://breeze.swissupdemo.com/media/catalog/product/cache/1974c3cab1e7ec248d03121d6f6496b0/w/g/wg01-bk-0.jpg",
-    btnn:"Add to cart",
-    like:"didi sport watch",
-    price:"$34.00"
-  },
-  {
-    id:17,
-    img:"https://breeze.swissupdemo.com/media/catalog/product/cache/1974c3cab1e7ec248d03121d6f6496b0/w/g/wg03-gr-0.jpg",
-    btnn:"Add to cart",
-    like:"sport watch",
-    price:"$36.00"
-  },
-  {
-    id:18,
-    img:"https://breeze.swissupdemo.com/media/catalog/product/cache/9935963157b6c43f963afdd068a44aa4/m/b/mb01-blue-0_1.jpg",
-    btnn:"Add to cart",
-    like:"Joust Duffle Bag On Sale 2",
-    price:"$34.00"
-  },
-]
 
 const Sliders = () => {
 
-  const cart=useContext(CardContext)
-  
+  // const cart=useContext(CardContext)
+   const carts = useSelector((state) => state.products.productList);
+     const dispatch = useDispatch();
+   
+const dataHandler=(e)=>{
+  e.preventDefault()
+  dispatch(getTotalCost())
+  dispatch(getPopUp())
+  dispatch(getNav())
+}
+
    const settings = {
         dots: true,
         infinite: false,
@@ -109,7 +63,7 @@ const Sliders = () => {
       <Section>
         <div className="slider-container">
           <Slider {...settings}>
-            {data.map((d, index) => (
+            {carts.map((d, index) => (
               <div key={index}>  
                 <Div>
                   <div className="productcard">
@@ -122,8 +76,14 @@ const Sliders = () => {
                       </>:
                       <button className='btn' onClick={()=>cart.addOneToCart(d.id)}>{d.btnn}</button>
                       } */}
-                      <img src={d.img} alt="" />
-                      <button className='btn'>{d.btnn}</button>
+                      <form on onSubmit={dataHandler}>
+                      <img src={d.img[0]} alt="" />
+                     
+                        <button className="btn"onClick={() => dispatch(addProductToCart(d._id))}>
+                             {d.btnn}
+                        </button>                                                         
+                      
+                      </form>
                       <button className='like'><i className="fa-regular fa-heart"></i></button>
                       <button className="weight"><i className="fa-solid fa-scale-balanced"></i></button>
                     </div>

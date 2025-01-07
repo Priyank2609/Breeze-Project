@@ -1,164 +1,173 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../slice/userSlice';
 
-const CreateAccount = () => {
-
-    // const [pass ,setPass]=useState('')
-    // const [showpass,setShowPass]=useState(true)
-
-    // const handlepass=(e)=>{
-    //     setPass(e.target.value)
-    // }
-    // const handleshowpass=()=>{
-    //     setShowPass(!showpass)
-    // }
-
-
-    const [formdata, setFormData] = useState({
-        firstname: "",
-        lastname: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        showpassword: false
-    })
-
-    const func = (event) => {
-        setFormData((prevdata) => {
-            return { ...prevdata, [ event.target.name]:event.target.value  };
-        })
-    }
-
-    const showPasswordFunc = () => {
-        setFormData((prevdata) => {
-            return { ...prevdata, showpassword: !formdata.showpassword };
-        })
-    }
-    const handleSubmit = (event) => {
-        event.preventDefault(); 
+function CreateAccount() {
+  const formvalue=useRef()
+  const [showPass,setShowPass]=useState(false)
+  const navigate=useNavigate()
+    // const initialvalue = { firstname: "",lastname:"", email: "", password: "",confirmPassword:"", showPass: false };
+    // const [formvalue, setFormvalue] = useState(initialvalue);
+    const [formErrors, setFormErrors] = useState({});
+ const dispatch=useDispatch()
     
+    // const handleChange = (e) => {
+    //   const { name, value } = e.target;
+    //   setFormvalue({ ...formvalue, [name]: value });
+    // };
+    const validate = (value) => {
+      const errors = {};
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+     
+      if (!value.email) {
+        errors.email = "Email is required!";
+      } else if (!regex.test(value.email)) {
+        errors.email = "This is not a valid email format!";
+      }
+      if (!value.password) {
+        errors.password = "Password is required";
+      } else if (value.password.length < 4) {
+        errors.password = "Password must be more than 4 characters";
+      } else if (value.password.length > 10) {
+        errors.password = "Password cannot exceed more than 10 characters";
+      }
+      if (!value.confirmPassword){
+        errors.confirmPassword="Confirm Password is require"
+      }
+      else if (value.password !== value.confirmPassword) {
+        errors.confirmPassword="Confirm Password is Invalid"
+      } 
         
-        if (formdata.password !== formdata.confirmPassword) {
-          alert("Passwords do not match!");
-          return;
-        }
+      
+      if (!value.firstname) {
+        errors.firstname= "FirstName is required!";
+      } 
+      if (!value.lastname) {
+        errors.lastname = "LastName is required!";
+      } 
+      return errors;
+    };
     
-       
-        console.log("Submitting form data:", formdata);
-      };
-    return(
-        <>
-            <Create>
-                <div className="customer">
-                    <div className="div">
-                    <h1>Create New Customer Account</h1>
-                    </div>
-                    <div className="account">
-                        <form action="http://localhost:8082/sign-up" method="post">
-                        <div className="info">
-                        <p>Personal Information</p>
-                        <div className="name">
-                        <label htmlFor="first">First Name</label>
-                        {/* <input type="text" id='first' name="firstname" value={formdata.firstname} onClick={func} required/> */}
-                        <input type="text" id="first" name="firstname" value={formdata.firstname} onChange={func} required />
-                        </div>
-                        <div className="hy">
-                        <label htmlFor="last">Last Name</label>
-                       <input type="text" id="last" name="lastname" value={formdata.lastname} onChange={func} required />
-                        </div>
-                        <div className="hi">
-                        <input type="checkbox" id='signn'/>
-                        <label htmlFor="sign">Sign Up for Newsletter</label>
-                        </div>
-                        <div className="hi">
-                        <input type="checkbox" id='signn'/>
-                        <label htmlFor="sign">Allow remote shopping assistance</label>
-                        </div>
-                        </div>
-                        <p>Sign-in Information</p>
-                        <div className="name">
-                        <label htmlFor="first">Email</label>
-                        {/* <input type="email" id='first' name="last" value={formdata.email} onClick={func} required/> */}
-                        <input type="email" id="first" name="email" value={formdata.email} onChange={func} required />
-                        </div>
-                        <div className="hy">
-                        <label htmlFor="last">Password</label>
-                        {/* <input type={formdata.showpassword? 'text':'password'} id='last' value={formdata.showpassword} onChange={func} required/> */}
-                        <input type={formdata.showpassword ? "text" : "password"} id="last" name="password" value={formdata.password} onChange={func} required />
-                        </div>
-                        <div className="hy">
-                        <label htmlFor="last"> Conform Password</label>
-                        {/* <input type={formdata.showpassword ? 'text':'password'} id='last' value={formdata.confirmPassword} onChange={func} required/> */}
-                        <input type={formdata.showpassword ? "text" : "password"} id="last" name="confirmPassword" value={formdata.confirmPassword} onChange={func} required />
-                        </div>
-                        <div className="hi">
-                        <input type="checkbox" id='signn'  value={formdata.showpassword} onChange={showPasswordFunc} />
-                        <label htmlFor="sign">Show Password</label>
-                        </div>
-                        <div className="btn">
-                            <button onClick={handleSubmit}>Create an Account</button>
-                        </div>
-                    </form>
-                    </div>
-                 
-                </div>
-            </Create>
-        </>
-    )
-}
-export default CreateAccount;
+    
+    const handleSubmit = async(e) => {
+      e.preventDefault();
+     
+       const payload={
+        firstname:formvalue.current.firstname.value,
+        lastname:formvalue.current.lastname.value,
+        email:formvalue.current.email.value,
+        password:formvalue.current.password.value,
+        confirmPassword:formvalue.current.confirmPassword.value
+      }
+      // console.log("hey");
+      setFormErrors(validate(payload));
+      console.log(payload);
+      
 
-// <h1>
-// <span>
-//     CREATE NEW CUSTOMER ACCOUNT
-// </span>
-// </h1>
-// <div className="Information-container">
-// <form action="http://localhost:3000/sign-up" method="post">
-//     <div className="Information">
-//         <legend>Personal Information</legend>
-//         <label htmlFor="first">First Name</label>
-//         <input type="text" id="first" name="firstname" value={formdata.firstname} onChange={func} required />
-//         <label htmlFor="last">Last Name</label>
-//         <input type="text" id="last" name="lastname" value={formdata.lastname} onChange={func} required />
-//         <div className="field-choice">
-//             <input type="checkbox" id="check1" />
-//             <label htmlFor="check1">Sign Up For Newsletter</label>
-//         </div>
-//         <div className="field-choice btm">
-//             <input type="checkbox" id="check2" />
-//             <label htmlFor="check2">Allow remote shopping assistance</label>
-//         </div>
-//         <legend>Sign-in Information</legend>
-//         <label htmlFor="email">Email</label>
-//         <input type="email" id="email" name="email" value={formdata.email} onChange={func} required />
-//         <label htmlFor="pass">Password</label>
-//         <input type={formdata.showpassword ? "text" : "password"} id="pass" name="password" value={formdata.password} onChange={func} required />
-//         <label htmlFor="confirm-pass">Confirm Password</label>
-//         <input type={formdata.showpassword ? "text" : "password"} id="confirm-pass" name="confirmPassword" value={formdata.confirmPassword} onChange={func} required />
-//         <div className="field-choice">
-//             <input type="checkbox" id="check3" value={formdata.showpassword} onChange={showPasswordFunc} />
-//             <label htmlFor="check3">Show Password</label>
-//         </div>
-//         <div className="field-choice">
-//             <input type="checkbox" id="check4" required />
-//             <label htmlFor="check4">I accept the <span>Privacy Policy</span></label>
-//         </div>
-//         <div className="field-choice">
-//             <input type="checkbox" id="check5" required />
-//             <label htmlFor="check5">I accept the <span>Terms & Conditions</span></label>
-//         </div>
-//         <div className="field-choice exception btm">
-//             <input type="checkbox" id="check6" required />
-//             <label htmlFor="check6">I agree to my personal data being stored and used to provide website services. (Order processing, comments, reviews, questions, testimonials)</label>
-//         </div>
-//         <button>
-//             CREATE AN ACCOUNT
-//         </button>
-//     </div>
-// </form>
-// </div>
-// </SignContainer >
+      if(Object.keys(formErrors).length===0){
+         axios.post("http://localhost:2000/users/reg",{payload},{
+          withCredentials:true
+         })
+        .then((res)=>{
+          if(res.status===201){
+            console.log(res)
+         
+            dispatch(setCredentials(payload))
+            navigate("/")
+          }
+        }
+        )
+          
+        }
+      }
+      
+     
+      
+ 
+    //   if (formvalue.password !== formvalue.confirmPassword) {
+    //               alert("Passwords do not match!");
+    //               return;
+    //             }
+  
+
+   
+    
+    
+    
+        return(
+            <>
+                <Create>
+                    <div className="customer">
+                        <div className="div">
+                        <h1>Create New Customer Account</h1>
+                        </div>
+                        <div className="account">
+                            
+                            <form  onSubmit={handleSubmit} method="post" ref={formvalue}>
+                            <div className="info">
+                            <p>Personal Information</p>
+                            <div className="name">
+                            <label htmlFor="firstName">First Name</label>
+      
+                            <input type="text" id="firstName" name="firstname" value={formvalue.firstname}   />
+                            <p className='error'>{formErrors.firstname}</p>
+                            </div>
+                            <div className="hy">
+                            <label htmlFor="lastName">Last Name</label>
+                           <input type="text" id="lastName" name="lastname" value={formvalue.lastname}  />
+                           <p className='error'>{formErrors.lastname}</p>
+                            </div>
+                            <div className="hi">
+                            <input type="checkbox" id='signnn'/>
+                            <label htmlFor="signnn">Sign Up for Newsletter</label>
+                            </div>
+                            <div className="hi">
+                            <input type="checkbox" id='signn'/>
+                            <label htmlFor="signn">Allow remote shopping assistance</label>
+                            </div>
+                            </div>
+                            <p>Sign-in Information</p>
+                            <div className="name">
+                            <label htmlFor="Email">Email</label>
+                           
+                            <input type="email" id="Email" name="email" value={formvalue.email}  />
+                            <p className='error'>{formErrors.email}</p>
+                            </div>
+                          
+                            <div className="hy">
+                            <label htmlFor="Password">Password</label>
+                            
+                            <input type={showPass ? "text" : "password"} id="Password" name="password" value={formvalue.password}   />
+                            <p className='error'>{formErrors.password}</p>
+                            </div>
+                         
+                            <div className="hy">
+                            <label htmlFor="ConfirmPassword"> Conform Password</label>
+                            
+                            <input type={showPass ? "text" : "password"} id="ConfirmPassword" name="confirmPassword" value={formvalue.confirmPassword}  />
+                            <p className="error">{formErrors.confirmPassword}</p>
+                            </div>
+                            <div className="hi">
+                            <input type="checkbox" id='sign'  value={formvalue.showPass} onClick={()=>setShowPass(!showPass)} />
+                            <label htmlFor="sign">Show Password</label>
+                            </div>
+                            <div className="btn">
+                                <button type='submit'>Create an Account</button>
+                            </div>
+                        </form>
+                        </div>
+                     
+                    </div>
+                </Create>
+            </>
+        )
+    }
+    export default CreateAccount;
+    
+
 export const Create=styled.div`
      position: relative;
      max-width: 1260px;
@@ -209,13 +218,19 @@ p{
     border-bottom: 1px solid rgba(0, 0, 0, .2);
 
 }
+.error{
+        color: red;
+        font-size: 1rem;
+        border: none;
+    }
 
-#first ,#last{
+#firstName ,#lastName,#Email,#Password,#ConfirmPassword{
     width: 100%;
     padding: 0.5rem .75rem;
     border:2px solid rgb(17 24 39);
     background-color:rgb(255 255 255);
     border-radius:.25rem;
+    
    }
    .hy{
     margin-top: .75rem;
@@ -256,3 +271,4 @@ button{
     flex-wrap: wrap;
   }
 `
+

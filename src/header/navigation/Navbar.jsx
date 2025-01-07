@@ -1,25 +1,83 @@
 import React, { useContext, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
-import { useCart } from '../../cart/CartContext';
-import { getData } from '../../pages/Women';
-
-
+// import { useCart } from '../../cart/CartContext';
+import { getData } from '../../productData';
+import {useSelector,useDispatch} from "react-redux"
+import { addProductToCart, deleteFromCart, findQuantity, getTotalCost, removeProduct} from '../../slice/addSlice';
+import { logout } from '../../slice/userSlice';
+import { Link , useNavigate} from 'react-router-dom';
+import axios from 'axios';
+import { deleteToWishlist } from '../../slice/wishlistSlice';
+import { useEffect } from 'react';
 const Navbar = ({toggle}) => {
     // const contextData=useCart();
-    const cart=useCart(); 
-    const number=cart.items.reduce((ac,el)=>ac+el.quantity,0);
-    const totalPrice=cart.getTotalCost();
+    // const cart=useCart(); 
    
+    // const totalPrice=cart.getTotalCost();
+      const carts = useSelector((state) => state.carts.cart);
+      console.log(carts);
+      const navbar=useSelector((state)=>state.carts.navbar)
+      
+       const number=carts.reduce((ac,el)=>ac+el.quantity,0);
+       
+       
+         const totalCosts=useSelector((state)=>state.carts.totalCost)
+    const dispatch=useDispatch()
+    const navigate=useNavigate()
+    console.log(totalCosts);
+
+    const {userInfo}=useSelector((state)=>state.auth)
+    console.log(userInfo);
+    const cart=useSelector((state)=>state.cart)
+    const wishList=useSelector((state)=>state.wish.wishlistItems)
+    
+
     
     // cost[show,setShow]=useState(false)
     // const handleClose=()=>setShow(false)
 
     // const handleShow=()=>setShow(true)
 
+    const logoutHandler=async()=>{
+          {
+             axios.post('http://localhost:2000/users/logout',{},{
+                withCredentials:true
+             })
+           .then((res)=>{
+            console.log(res.data)
+           dispatch(logout())
+            navigate("/signIn")
+          
+        }
+
+     )
+        }  
+       
+    }
+    useEffect(() => {
+  
+})
+
+    const delHandler=async()=>{
+         {
+             axios.post('http://localhost:2000/wish/delete',{},{
+                withCredentials:true
+             })
+           .then((res)=>{
+            console.log(res.data)
+           dispatch(deleteToWishlist())
+          
+        }
+
+     )
+        }  
+    }
+
     return(
         <>
             <Nav>
+                
             <Drawer onClick={toggle}>
             
             <i className="fa-solid fa-bars"></i>
@@ -128,7 +186,20 @@ const Navbar = ({toggle}) => {
                 <i className="fa-regular fa-circle-user"></i>
                 </label>
                 <ul className='hi'>
-                   <NavLink to="/signIn">
+                    {userInfo ? (
+                        <>
+                        <li>{userInfo.firstname}</li>
+                       <Link to="/signIn">
+                          <li  onClick={logoutHandler}>logout</li>
+                       </Link>
+                            
+                        
+                          
+
+                        </>
+                    ):(
+                        <>
+                         <NavLink to="/signIn">
                     <li>
                         sign in
                     </li>
@@ -138,9 +209,67 @@ const Navbar = ({toggle}) => {
                         create account
                     </li>
                     </NavLink>
+                        </>
+                    )}
+                  
                     </ul>
                     </div>
-                <div className="ll">
+                    {wishList?<>
+                      <div className="ll">
+                <input type="checkbox" id='l' />
+                <label htmlFor="l">
+                <i  className="fa-regular fa-heart"></i></label>
+                <ul className='hy'>
+                    <h4>My Wish List</h4>
+                    <div className="pika">
+                      {wishList.map((item,idx)=>{       
+                return( 
+                <li  key={idx}>
+                    
+                    <div className="add">
+                    <div className="image">
+                    <img src={item.img[0]} alt="" />
+                    </div>
+                    <div className="items">
+                        <a href=""><h4>{item.like}</h4></a>
+                       
+                        <p className='p'> ${item.price}.00</p>
+                        <div className="del">
+                        <i className="fa-regular fa-trash-can" onClick={delHandler}></i>
+                        </div>
+                        {/* <div className="remove">
+                        <button onClick={()=>{dispatch(addProductToCart(item._id)) & dispatch(getTotalCost())}}
+                            >+</button>
+                        <button onClick={()=>{dispatch(removeProduct(item._id))& dispatch(getTotalCost())}}>-</button>
+                        </div> */}
+                    </div>
+                   </div>
+                    
+                </li>
+                
+                 )
+               
+                   })}
+                   
+                    </div>
+                </ul>
+                </div>
+                    </>:
+                    <>
+                  <div className="ll">
+                     <input type="checkbox" id='l' />
+                <label htmlFor="l">
+                <i  className="fa-regular fa-heart"></i></label>
+                <ul className='hy'>
+                    <h4>My Wish List</h4>
+                     <p>Last Added Items</p>
+                    <li>You have no items in your wish list.</li>
+                    
+                </ul>
+                    
+                </div>
+             </>}
+                {/* <div className="ll">
                 <input type="checkbox" id='l' />
                 <label htmlFor="l">
                 <i  className="fa-regular fa-heart"></i></label>
@@ -149,7 +278,7 @@ const Navbar = ({toggle}) => {
                     <p>Last Added Items</p>
                     <li>You have no items in your wish list.</li>
                 </ul>
-                </div>
+                </div> */}
               
                 <div className="div">
                 
@@ -157,7 +286,7 @@ const Navbar = ({toggle}) => {
                     <label htmlFor="ki" >
                 <p> 
                <i className="fa-solid fa-bag-shopping"></i>
-               <sup>{number }</sup>
+              
                </p> 
               </label>
               
@@ -172,19 +301,20 @@ const Navbar = ({toggle}) => {
             
                 </label>
                 </div>
-               
-                {number > 0 ?
+                {carts?<>
+                 {navbar ?<>
+               {number  ?
                 <>
              <div className="price">
                         <p>Cart Subtotal</p>
-                        {/* <p>${totalPrice}.00</p> */}
+                        <p>  ${totalCosts}.00</p>
                      </div>
                      <button className='btn'>Proceed to Checkout</button>
 
                      <div className="pika">
-                   {cart.items.map((item,idx)=>{
+                   {carts.map((item,idx)=>{
                 
-                const list=getData(item.id)
+                const list=getData(item._id)
                
                 
                 return( 
@@ -193,7 +323,7 @@ const Navbar = ({toggle}) => {
                 
                    <div className="add">
                     <div className="image">
-                    <img src={list.img} alt="" />
+                    <img src={list.img[0]} alt="" />
                     </div>
                     <div className="items">
                         <a href=""><h4>{list.like}</h4></a>
@@ -201,15 +331,16 @@ const Navbar = ({toggle}) => {
                         <p className='p'> ${list.price}.00</p>
                         <div className="del">
                         <div className="fai">
-                        <p className='qty'>Qty  </p>
+                        <p className='qty'>Qty   </p>
                        
-                        <p> {cart.getProductQuantity(item.id)}</p>
+                        <p> {()=>dispatch(findQuantity(item._id))} {item.quantity}</p>
                         </div>
-                        <i class="fa-regular fa-trash-can" onClick={()=>cart.deleteFromCart(item.id)}></i>
+                        <i className="fa-regular fa-trash-can" onClick={()=>dispatch(deleteFromCart(item._id))}></i>
                         </div>
                         <div className="remove">
-                        <button onClick={()=>cart.addOneToCart(item.id)}>+</button>
-                        <button onClick={()=>cart.removeOneFromCart(item.id)}>-</button>
+                        <button onClick={()=>{dispatch(addProductToCart(item._id)) & dispatch(getTotalCost())}}
+                            >+</button>
+                        <button onClick={()=>{dispatch(removeProduct(item._id))& dispatch(getTotalCost())}}>-</button>
                         </div>
                     </div>
                    </div>
@@ -226,8 +357,15 @@ const Navbar = ({toggle}) => {
                 </>
                    
                :
+                  <li>You have no items in your shopping cart.</li>
+ } 
+               </>:<>
                 <li>You have no items in your shopping cart.</li>
-}
+               </>}
+                
+                </>:<></>}
+              
+                  
                </ul> 
                </div>
                </div>

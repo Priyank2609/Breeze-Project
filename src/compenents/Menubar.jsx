@@ -1,27 +1,31 @@
 import React from 'react';
 import { useState } from 'react';
-import { useData } from '../cart/ProductData';
+// import { useData } from '../cart/ProductData';
 import Products from './Products';
 import Listveiw from './Listveiw';
+import { useDispatch, useSelector } from 'react-redux';
+import { getveiw, setVeiw, sortByName, sortByPositions, sortByPrice } from '../slice/productSlice';
 
 const Menubar = () => {
 
 
-    const [veiw,setVeiw]=useState(true)
-    const {sortByName,sortByPositions,sortByPrice}=useData();
+    // const [veiw,setVeiw]=useState(true)
+   const veiw=useSelector((state)=>state.products.veiw)
+    const dispatch=useDispatch()
+    // const {sortByName,sortByPositions,sortByPrice}=useData();
 
     function handleSort(e){
         const Selected=e.target.value
      
         if (Selected==="name") {
-         sortByName()
+         dispatch(sortByName())
         }
         else if(Selected==="position"){
-         sortByPositions();
+         dispatch(sortByPositions());
          
         }
         else {
-         sortByPrice()
+         dispatch(sortByPrice())
         }
         
         
@@ -36,10 +40,10 @@ const Menubar = () => {
       <div className="size">
           <div className="icons">
             
-                   <i  onClick ={()=>setVeiw(true)} className="fa-solid fa-qrcode grid"></i>
+                   <i  onClick={()=>dispatch(setVeiw())} className="fa-solid fa-qrcode grid"></i>
                   
 
-                    <i onClick ={()=>setVeiw(false)} className="fa-solid fa-bars list"></i>
+                    <i onClick ={()=>dispatch(getveiw())} className="fa-solid fa-bars list"></i>
                   
               
          
@@ -61,7 +65,7 @@ const Menubar = () => {
       </div>
   </div>
   {
-      veiw ===true?
+      veiw ==true?
       <>
   <Products/>
   </>:

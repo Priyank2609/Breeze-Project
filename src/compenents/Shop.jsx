@@ -1,12 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useData } from '../cart/ProductData';
+// import { useData } from '../cart/ProductData';
+import {useDispatch, useSelector} from "react-redux"
+import { filterByColor, removeColor, removeColors, setColor } from '../slice/productSlice';
+
 
 
 const Shop = () => {
 
-    const {filterByColor,removeColor,color}=useData();
-    console.log(color)
+    
+    // const {dispatch( filterByColor,removeColor,color}=useData();
+    const color=useSelector((state)=>state.products.color)
+    const colors=useSelector((state)=>state.products.colors)
+    const dispatch=useDispatch()
+    // console.log(color)
     return(
         <>
             <Shoping>
@@ -35,7 +42,7 @@ const Shop = () => {
                     <i className="fa-solid fa-xmark"></i>
                    </label>
                   </div>
-              {color.length!==0?
+              {color?
               
               <div className="category">
               <div className="title">
@@ -43,17 +50,18 @@ const Shop = () => {
               </div>
               <ul className='remove'>
                 <li>
-                   Color: {color}
+                   Color: {colors}
                 </li>
-                <i className="fa-solid fa-xmark" onClick={removeColor}></i>
+                <i className="fa-solid fa-xmark" onClick={()=>dispatch(removeColor())&dispatch(removeColors())} ></i>
               </ul>
               <div className="clear">
-              <p onClick={removeColor}>Clear All</p>
+              <p   onClick={()=>dispatch(removeColor())&dispatch(removeColors())}  >Clear All</p>
               </div>
             </div>
               :<>
+              
               </>  
-              }    
+               }     
                   
              <div className="category">
                 <div className="title">
@@ -109,7 +117,7 @@ const Shop = () => {
                     </ul>
                 </div>
              </div>
-             {color.length!==0?<></>:
+             {color?<></>:
              <div className="category">
              <div className="title">
                 Color
@@ -117,11 +125,11 @@ const Shop = () => {
 
              <div className="options">
                  <ul className='col'>
-                    <li className='li' onClick={()=>{filterByColor("black")}}></li>
-                    <li className='ki' onClick={()=>{filterByColor("blue")}}></li>
-                    <li className='ji' onClick={()=>{filterByColor("brown")}}></li>
-                    <li className='hi'onClick={()=>{filterByColor("gray")}}></li>
-                    <li className='gi'onClick={()=>{filterByColor("green")}}></li>
+                    <li className='li' onClick={()=>{dispatch( filterByColor("black"))&dispatch(setColor())}}></li>
+                    <li className='ki' onClick={()=>{dispatch( filterByColor("blue"))&dispatch(setColor())}}></li>
+                    <li className='ji' onClick={()=>{dispatch( filterByColor("brown"))&dispatch(setColor())}}></li>
+                    <li className='hi'onClick={()=>{dispatch( filterByColor("gray"))&dispatch(setColor())}}></li>
+                    <li className='gi'onClick={()=>{dispatch( filterByColor("green"))&dispatch(setColor())}}></li>
                     </ul>
                     </div> 
                     <div className="options">
@@ -134,7 +142,8 @@ const Shop = () => {
                
                     </ul>
                     </div> 
-          </div>}
+          </div>
+           }  
              
 
              <div className="category">

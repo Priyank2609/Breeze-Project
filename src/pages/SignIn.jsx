@@ -1,48 +1,103 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useDispatch ,useSelector} from 'react-redux';
+import { setCredentials } from '../slice/userSlice';
+
 
 const SignIn = () => {
 
-    async function fetchApi() {
-        try {
-            const res = await fetch("http://localhost:8082/login");
-            const resJson = await res.json();
-            console.log(resJson);
-            return resJson;
-        } catch (err) {
-            console.log(err);
+   
+//    const initialFormData = {
+//     email: '',
+//     password: '',
+//     showpassword: false, 
+//    };
+  
+   
+  const formdata = useRef();
+    const [showPass,setShowPass] = useState(false)
+const dispatch=useDispatch()
+
+const navigate=useNavigate()
+    //  const {userInfo}=useSelector((state)=>state.auth.userInfo)
+
+    const[signinError,setSignInError]=useState({})
+//     const func = (e) => {
+//       const { name, value } = e.target.value;
+//     //   setFormData({ ...formdata, [name]: value });
+//     formdata.current[name]=value
+
+//    console.log( formdata.current);
+   
+    
+    
+    
+
+   
+   const validate =(data)=>{
+    const errors={}
+    const regex=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+ 
+    if(!data.email){
+        errors.email="Email is require"
+    }
+    else if (!regex.test(data.email)) {
+        errors.email = "This is not a valid email format!";
+    }
+    if (!data.password) {
+        errors.password="Password is require"
+    }else if (data.password.length < 4) {
+        errors.password = "Password must be more than 4 characters";
+      } else if (data.password.length > 10) {
+        errors.password = "Password cannot exceed more than 10 characters";
+      }
+   return errors
+    
+   }  
+    
+
+  
+   const formSubmit= async (event)=>{
+
+    
+    event.preventDefault()
+    
+     const dataInfo={
+    email:formdata.current.email.value,
+    password:formdata.current.password.value,
+ }
+
+
+  
+    const errors=validate(dataInfo)
+
+    if(Object.keys(errors).length ===0 ){
+             axios.post('http://localhost:2000/users/auth',{dataInfo},{
+                withCredentials:true
+             })
+           .then((res)=>{
+            console.log(res.data)
+           dispatch(setCredentials({...res.data}));
+            navigate("/")
+          
         }
-    }
 
-    const data = fetchApi();
-
-    const [formdata, setFormData] = useState({
-        email: "",
-        password: "",
-        showpassword: false
-    })
-
-    const func = (event) => {
-        const name=event.target.name;
-        const value=event.target.value
-        setFormData((prevdata) => {
-            return { ...prevdata, [name]:value};
-        })
-    }
-
-    const showPassFunc = () => {
-        setFormData((prevdata) => {
-            return { ...prevdata, showpassword: !formdata.showpassword };
-        })
-    }
+     )
+        }   else{
+            console.log("A occurred try again later ");
+            
+          }
+        
    
-    console.log(formdata)
+//    console.log(errors);
    
+}
     return(
         <>
             <Sign>
-            <form   method='post' action='http://localhost:8082/login'>
+            <form ref={formdata}   method='post'   action='http://localhost:2000/users/auth'  onSubmit={formSubmit}>
 
             <div className="main">
                 <div className="div">
@@ -58,14 +113,18 @@ const SignIn = () => {
                     <div className="mail">
                     <label htmlFor='email'>Email</label>
                    
-                    <input type="email" id="email" required name="email" value={formdata.email} onChange={func} />
+                    <input type="email" id="email"  name="email" />
+                    <p>{signinError.email}</p>
                     </div>
                     <div className="pass">
                     <label htmlFor="password">Password</label>
-                    <input type={formdata.showpassword ? 'text':'password'} id='password' name='password' value={formdata.password} onChange={func} required />
+                    <input type={showPass ? 'text':'password'} id='password' name='password' />
+                    <p>{signinError.password}</p>
+                     
                     </div>
                     <div className="show">
-                        <input type="checkbox" id='showpass' value={formdata.showpassword} onClick={showPassFunc}/>
+                        <input type="checkbox" id='showpass'  onClick={()=>{setShowPass(!showPass)}}/>
+                        
                         <label htmlFor="show password">Show Password</label>
                     </div>
                     <div className="btn">
@@ -170,10 +229,15 @@ h1{
  
    .mail{
     margin-top:12px;
-    
+    P{
+        color: red;
+    }
    }
    .pass{
     margin-top: 12px;
+    P{
+        color: red;
+    }
    }
    .show{
     margin-top: 12px;

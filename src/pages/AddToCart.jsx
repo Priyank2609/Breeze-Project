@@ -1,82 +1,53 @@
-// // import React from 'react';
-// // import { Buttons } from '../styles/Theme';
-// // import { ThemeProvider } from 'styled-components';
-// // import { theme } from '../styles/Theme';
-// // const Button = () => {
-// //     return(
-// //         <>
-            
-// //             <ThemeProvider theme={theme}>
-// //     <div>
-     
-      
-      
-// //     </div>
-// //   </ThemeProvider>
-           
-// //         </>
-// //     )
-// // // }
-// // export default Button;
+import React, { useRef, useState } from 'react';
+import { NavLink, useParams } from 'react-router-dom';
+import { getData } from '../productData';
+import {useSelector,useDispatch} from "react-redux"
+import { addProductToCart, addToCart, deleteFromCart, findQuantity, getNav, getPopUp, getTotalCost, removeProduct} from "../slice/addSlice";
+import styled from 'styled-components';
+import { Buttons ,theme} from '../styles/Theme';
+import Women from './Women';
+import Slider from "react-slick";
 
-// import React, { useRef, useState } from 'react';
-// import { NavLink, useParams } from 'react-router-dom';
-// import { getData } from '../productData';
-// import {useSelector,useDispatch} from "react-redux"
-// import { addProductToCart, addToCart, deleteFromCart, findQuantity, getNav, getPopUp, getTotalCost, removeProduct} from "../slice/addSlice";
-// import styled from 'styled-components';
-// import { Buttons ,theme} from '../styles/Theme';
-// import Women from './Women';
-// import Slider from "react-slick";
-
-// export const Input=styled.input`
-//     background-color: ${props=>(props.cols?props.cols:"black")};
-//     height: 1.6rem;
-//         width:  1.6rem;
+export const Input=styled.input`
+    -webkit-appearance:none;
+    appearance: none;
+    background-color: ${props=>(props.col?props.col:"black")};
+    height: 1.6rem;
+        width:  1.6rem;
        
         
-//         border: 2px solid grey;
-//         border-radius: 50%;
+        border: 2px solid grey;
+        border-radius: 50%;
         
-//         cursor: pointer;
-        
+        cursor: pointer;
     
-// `
+`
 
-// const AddToCart = () => {
-//     const {id}=useParams()
-// // const carts = useSelector((state) => state.carts.cart);
-// // const total=useSelector((state)=>state.carts.total)
+const AddToCart = () => {
+    const {id}=useParams()
+// const carts = useSelector((state) => state.carts.cart);
+// const total=useSelector((state)=>state.carts.total)
 
-// //          const totalCosts=useSelector((state)=>state.carts.totalCost)
-// //       console.log(carts);
-//     const formColor=useRef(null)
-//     const dispatch=useDispatch()
-//     const lists = getData(id)
+//          const totalCosts=useSelector((state)=>state.carts.totalCost)
+//       console.log(carts);
+    const formColor=useRef(null)
+    const dispatch=useDispatch()
+    const lists = getData(id)
     
-//     const [veiw ,setVeiw]=useState(true)
-//     const carts = useSelector((state) => state.products.productList);
-//     const data=carts.filter((el)=>el._id===id);
-  
-//     const handleSubmitForm=(e)=>{
-//         // console.log("working")
-//     e.preventDefault()
-//     console.log(formColor.current.color.value)
-// //     const handleData={
-// //     color:formColor.current.color.value,
-// //     id:carts._id
-// //    }
-// //    console.log(handleData);
-   
-//     //  dispatch(addToCart(handleData)),
-//      dispatch(getTotalCost()),
-//      dispatch(getPopUp()),
-//      dispatch(getNav())
+    const [veiw ,setVeiw]=useState(true)
+    const carts = useSelector((state) => state.products.productList);
+    
+    const data=carts.filter((el)=>el._id===id);
 
+   const handleSubmit=(e)=>{
+    e.preventDefault()
+    
+     dispatch(addToCart(lists._id))
+     dispatch(getTotalCost()),
+     dispatch(getPopUp()),
+     dispatch(getNav())
      
-     
-     
-//    }
+   }
 
 
 
@@ -114,13 +85,25 @@
                        
                         
                        <div className="slider-container">
-                         <Slider {...settings}>
+                         <Slider {...settings}
+                         customPaging={(i)=>{
+                            return ( 
+                            <div className="small-image">
+                               <img src={lists.img[i]} alt=""  style={{width:"110px",height:"110px",objectFit:"cover"}}/>
+                            </div>
+                            )
+                         }}
+                         dotsClass='slick-dots custom-slider'
+                         >
                           <div className="image">
                             <img src={lists.img[0]} alt="" />
                    
                             </div>
                              <div className="image">
                             <img src={lists.img[1]} alt="" />
+                             </div>
+                              <div className="image">
+                            <img src={lists.img[2]} alt="" />
                              </div>
                                 
                                </Slider>
@@ -129,12 +112,12 @@
                                
                     
                     <div className="small">
-                     <div className="small-img">
+                     {/* <div className="small-img">
                     <img src={lists.img[0]} alt="" />   
                     </div>
                      <div className="small-img">
                     <img src={lists.img[1]} alt="" />                   
-                    </div>
+                    </div> */}
                          {/* <div className="small-img">
                     <img src={lists.img[2]} alt="" />
                     
@@ -167,30 +150,27 @@
                  <div className="title">
                      Color
                 </div>
-            <form   onSubmit={handleSubmitForm}  ref={formColor}>
+            <form   onSubmit={handleSubmit} action="" ref={formColor}>
                   <div className="options">
                     <div className='col'>
-                       
-                        
                    {
+                    // console.log("data=",data[0].color)
+
                    data[0].color.map((e,idx)=>{
-                    console.log(e);
-                    
                     return (
                         <>
-                        <div className="col">
-                        <Input type="radio" name="color" key={idx}  value={e} cols={e} required />
                        
-                       </div>
-                     <Input className='cols' cols={e}/>
-                     {e}
+                        <div className="colors">
+                              <Input type="radio" name="color" key={idx} value={e} col={e} required />
+                        </div>
+                       
+                        
+                        
+                        
                         </>
                     )
                     })
                    }
-                   
-                
-                        
                    
                
                     </div>
@@ -205,29 +185,23 @@
                        
                      
                         </div>
-                        <p>   <div className="remove">
-                     
+    
+                          <div className="remove">
+                  
                        <input
                           type="number"
-                        
-                        placeholder={lists.quantity}
-                          min={1}
-                           onChange={(e) => {
-                             
-                                dispatch(addToCart(lists._id),e.target.value);
- 
-                                }}
-                                 onBlur={(e) => {
-                                      e.target.value=value
-                                    }}
+                        //    value="1"
+                           onChange={(e) => {()=>dispatch(findQuantity(lists._id))}}
+                                required
                                 
                           />
                         </div>
-                        </p>
-                        <Buttons theme={theme} >    Add to Cart</Buttons>
+                        
+                        <Buttons theme={theme}  >    Add to Cart</Buttons>
                         </div>
                         
                         </div>
+
                         </form>
                         <hr />
                         <div className="list">
@@ -297,7 +271,7 @@
                   
            </div>
                   </div>
-                 
+                
                    </Add>
       
             
@@ -312,16 +286,10 @@ export const Add=styled.div`
     margin: 0 auto;
     max-width: 1275px;
 
- .cols{
-        background-color: ${props=>(props.cols?props.cols:"black")};
-        height: 1.6rem;
-        width:  1.6rem;
-        border: 2px solid grey;
-        border-radius: 50%;
-        cursor: pointer;
- }
+
+
 .slider-container{
-    width: 500px;
+    width: 450px;
     
     @media (max-width: 520px){
         width: 400px;
@@ -345,11 +313,44 @@ export const Add=styled.div`
        
        
    }
+   .slick-prev, .slick-next {
+    top: 33% !important;
+   }
    .slick-prev:before, .slick-next:before {
     color: #7b7a7a;
    }
-.slick-dots{
-    display: none !important;
+   .custom-slider li{
+    width: 110px;
+    height: 110px;
+    img:hover{
+        
+        border: 2px solid black;
+        border-radius: .5rem;
+    }
+  
+   }
+   .custom-slider{
+    margin: 10px 0;
+    bottom: -25%;
+    width: 100%;
+    text-align: start !important;
+    position: relative !important;
+     .small-img{
+                margin: 1rem 0;
+                width: 110px !important;
+                max-width: 100%;
+                 background-color: #faf7f7;
+                img{
+                 
+                     width: 110px !important;
+                  max-width: 100% ;
+                }
+              
+             }
+   }
+   
+.small-img{
+    
 }
 table{
     width: 100%;
@@ -498,18 +499,7 @@ li{
            
     }     
             }
-              .small-img{
-                margin: 1rem 0;
-                width: 110px !important;
-                max-width: 100%;
-                 background-color: #faf7f7;
-                img{
-                  mix-blend-mode: multiply;
-                     width: 110px !important;
-                  max-width: 100% ;
-                }
-              
-             }
+             
     
     
     }
@@ -534,6 +524,18 @@ li{
     .col{
     display: flex;
     gap: 1rem;
+   
+    .colors{
+        input{
+          height: 1.6rem;
+         width: 1.6rem;
+        }  
+        :hover{
+         border: 2px solid black;
+         border-radius: 50%;
+    } 
+    }
+    
     
 
     
@@ -599,10 +601,7 @@ li{
 .options{
     padding-top:1rem;
     padding-bottom: 1rem;
-    /* input{
-        display: none;
-    } */
-    
+  
     /* margin-bottom:abel1rem; */
 }
 
@@ -722,67 +721,3 @@ margin: 1rem 0;
    
 }
 `
-
-
-
- {cart?<>
-               
-                
-                </>:<>
-                  
-               
-                
-             <div className="price">
-                        <p>Cart Subtotal</p>
-                        <p>  ${totalCosts}.00</p>
-                     </div>
-                     <button className='btn'>Proceed to Checkout</button>
-
-                     <div className="pika">
-                   {carts.map((item,idx)=>{
-                
-                const list=getData(item._id)
-               
-                
-                return( 
-                <li  key={idx}>
-                     
-                
-                   <div className="add">
-                    <div className="image">
-                    <img src={list.img[0]} alt="" />
-                    </div>
-                    <div className="items">
-                        <a href=""><h4>{list.like}</h4></a>
-                       
-                        <p className='p'> ${list.price}.00</p>
-                        <div className="del">
-                        <div className="fai">
-                        <p className='qty'>Qty   </p>
-                       
-                        <p> {()=>dispatch(findQuantity(item._id))} {item.quantity}</p>
-                        </div>
-                        <i className="fa-regular fa-trash-can" onClick={()=>dispatch(deleteFromCart(item._id))}></i>
-                        </div>
-                        <div className="remove">
-                        <button onClick={()=>{dispatch(addProductToCart(item._id)) & dispatch(getTotalCost())}}
-                            >+</button>
-                        <button onClick={()=>{dispatch(removeProduct(item._id))& dispatch(getTotalCost())}}>-</button>
-                        </div>
-                    </div>
-                   </div>
-                    
-                 
-               
-                </li>
-                 )
-               
-                   })}
-                   
-                   </div>
-                    
-               
-              
-                <li>You have no items in your shopping cart.</li>
-               </>}
-                

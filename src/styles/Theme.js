@@ -16,7 +16,7 @@ h4{
 
    `
     export const Buttons = styled.button`
-    color: ${props => props.theme.fg};
+   
     font-size: 1rem;
     line-height: 1.75rem;
     font-weight: 500;
@@ -26,13 +26,23 @@ h4{
     justify-content: center;
     align-items: center;
     border-radius: 6%;  
-    background: ${props => props.theme.bg};
+    background: ${props => props.theme.colors.black};
+    color: ${props => props.theme.colors.white};
     `
 
  export const theme = {
-    fg: "white",
-    bg: "black"
+    colors: {
+       white: "white",
+       black: "black",
+       blue:"#161635",
+    },
+    
+
   };
+
+
+
+
 
  
   
