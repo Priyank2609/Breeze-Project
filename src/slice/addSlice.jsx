@@ -9,8 +9,7 @@ import { useLoaderData } from 'react-router-dom';
 
 const initialState = {
   cart:JSON.parse(localStorage.getItem('cart')) || [],
- 
-  totalCost:0,
+  totalCost:JSON.parse(localStorage.getItem('cost')) || 0,
   visible:false,
   
     navbar:false,
@@ -29,7 +28,8 @@ const initialState = {
         if (quantity == undefined) {
             return 0;
         }
-        return quantity;
+        // return quantity;
+         return localStorage.setItem('cart', JSON.stringify(state.cart));
     }
 ,
   
@@ -99,6 +99,13 @@ const initialState = {
         state.cart.map(product => {
         let productData =getData(product._id);
         state.totalCost+= productData.price * product.quantity
+        if(state.totalCost){
+           localStorage.setItem('cost', JSON.stringify(state.totalCost));
+        }else{
+           localStorage.removeItem('cost');
+        }
+        
+       
         })
      
      console.log(state.totalCost)

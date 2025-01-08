@@ -786,3 +786,68 @@ margin: 1rem 0;
                 <li>You have no items in your shopping cart.</li>
                </>}
                 
+
+
+                 {carts?<>
+                 {navbar ?<>
+               {number  ?
+                <>
+             <div className="price">
+                        <p>Cart Subtotal</p>
+                        <p>  ${totalCosts}.00</p>
+                     </div>
+                     <button className='btn'>Proceed to Checkout</button>
+
+                     <div className="pika">
+                   {carts.map((item,idx)=>{
+                
+                const list=getData(item._id)
+               
+                
+                return( 
+                <li  key={idx}>
+                     
+                
+                   <div className="add">
+                    <div className="image">
+                    <img src={list.img[0]} alt="" />
+                    </div>
+                    <div className="items">
+                        <a href=""><h4>{list.like}</h4></a>
+                       
+                        <p className='p'> ${list.price}.00</p>
+                        <div className="del">
+                        <div className="fai">
+                        <p className='qty'>Qty   </p>
+                       
+                        <p> {()=>dispatch(findQuantity(item._id))} {item.quantity}</p>
+                        </div>
+                        <i className="fa-regular fa-trash-can" onClick={()=>dispatch(deleteFromCart(item._id))}></i>
+                        </div>
+                        <div className="remove">
+                        <button onClick={()=>{dispatch(addProductToCart(item._id)) & dispatch(getTotalCost())}}
+                            >+</button>
+                        <button onClick={()=>{dispatch(removeProduct(item._id))& dispatch(getTotalCost())}}>-</button>
+                        </div>
+                    </div>
+                   </div>
+                    
+                 
+               
+                </li>
+                 )
+               
+                   })}
+                   
+                   </div>
+                    
+                </>
+                   
+               :
+                  <li>You have no items in your shopping cart.</li>
+ } 
+               </>:<>
+                <li>You have no items in your shopping cart.</li>
+               </>}
+                
+                </>:<></>}

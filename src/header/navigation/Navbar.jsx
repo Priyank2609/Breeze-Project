@@ -8,8 +8,9 @@ import { addProductToCart, deleteFromCart, findQuantity, getTotalCost, removePro
 import { logout } from '../../slice/userSlice';
 import { Link , useNavigate} from 'react-router-dom';
 import axios from 'axios';
-import { deleteToWishlist } from '../../slice/wishlistSlice';
+// import { deleteToWishlist } from '../../slice/wishlistSlice';
 import { useEffect } from 'react';
+import { deleteToWishlist } from '../../slice/wishlistSlice';
 const Navbar = ({toggle}) => {
     // const contextData=useCart();
     // const cart=useCart(); 
@@ -29,7 +30,9 @@ const Navbar = ({toggle}) => {
 
     const {userInfo}=useSelector((state)=>state.auth)
     console.log(userInfo);
-    const cart=useSelector((state)=>state.cart)
+    // const cart=useSelector((state)=>state.cart)
+    console.log(carts);
+    
     const wishList=useSelector((state)=>state.wish.wishlistItems)
     
 
@@ -59,18 +62,16 @@ const Navbar = ({toggle}) => {
   
 })
 
-    const delHandler=async()=>{
+    const delHandler=async(id)=>{
          {
-             axios.post('http://localhost:2000/wish/delete',{},{
+             axios.delete(`http://localhost:2000/wish/delete/${id}`,{
                 withCredentials:true
              })
            .then((res)=>{
-            console.log(res.data)
-           dispatch(deleteToWishlist())
-          
-        }
-
-     )
+            console.log(res)
+            dispatch(deleteToWishlist(id))
+           })
+         
         }  
     }
 
@@ -233,9 +234,10 @@ const Navbar = ({toggle}) => {
                     <div className="items">
                         <a href=""><h4>{item.like}</h4></a>
                        
-                        <p className='p'> ${item.price}.00</p>
+                        
                         <div className="del">
-                        <i className="fa-regular fa-trash-can" onClick={delHandler}></i>
+                           <p className='p'> ${item.price}.00</p>
+                        <i className="fa-regular fa-trash-can" onClick={()=>delHandler(item._id)}></i>
                         </div>
                         {/* <div className="remove">
                         <button onClick={()=>{dispatch(addProductToCart(item._id)) & dispatch(getTotalCost())}}
@@ -301,10 +303,14 @@ const Navbar = ({toggle}) => {
             
                 </label>
                 </div>
-                {carts?<>
-                 {navbar ?<>
-               {number  ?
-                <>
+                
+               {number===0?
+               
+                localStorage.setItem("cost",JSON.stringify(0))||<><li>You have no items in your shopping cart.</li></>
+                :<>
+                  
+               
+                
              <div className="price">
                         <p>Cart Subtotal</p>
                         <p>  ${totalCosts}.00</p>
@@ -335,7 +341,7 @@ const Navbar = ({toggle}) => {
                        
                         <p> {()=>dispatch(findQuantity(item._id))} {item.quantity}</p>
                         </div>
-                        <i className="fa-regular fa-trash-can" onClick={()=>dispatch(deleteFromCart(item._id))}></i>
+                        <i className="fa-regular fa-trash-can" onClick={()=>dispatch(deleteFromCart(item._id))  & dispatch(getTotalCost())}></i>
                         </div>
                         <div className="remove">
                         <button onClick={()=>{dispatch(addProductToCart(item._id)) & dispatch(getTotalCost())}}
@@ -354,16 +360,10 @@ const Navbar = ({toggle}) => {
                    
                    </div>
                     
-                </>
-                   
-               :
-                  <li>You have no items in your shopping cart.</li>
- } 
-               </>:<>
-                <li>You have no items in your shopping cart.</li>
-               </>}
+               
+              
                 
-                </>:<></>}
+               </>}
               
                   
                </ul> 
@@ -808,7 +808,7 @@ a{
     opacity: 1;
    
     font-weight: 400;
-    width: 18rem;
+    width: 20rem;
     transform: scale(1);
     z-index:1 ;
     background-color: #fff;

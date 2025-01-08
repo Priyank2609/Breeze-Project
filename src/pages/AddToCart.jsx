@@ -42,7 +42,7 @@ const AddToCart = () => {
    const handleSubmit=(e)=>{
     e.preventDefault()
     
-     dispatch(addToCart(lists._id))
+     dispatch(addProductToCart(lists._id))
      dispatch(getTotalCost()),
      dispatch(getPopUp()),
      dispatch(getNav())

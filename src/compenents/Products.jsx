@@ -91,7 +91,7 @@ const wishHandler=async(id)=>{
                 <NavLink to={`/addtocart/${product._id}`}>
                   <button
                     className="btn"
-                    onClick={() => dispatch(addToCart(product._id))}
+                    // onClick={() => dispatch(addToCart())}
                   >
                     {product.btnn}
                   </button>
