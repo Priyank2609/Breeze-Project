@@ -14,66 +14,65 @@ const Menubar = () => {
     const dispatch=useDispatch()
     // const {sortByName,sortByPositions,sortByPrice}=useData();
 
-    function handleSort(e){
+    const handleSort=(e)=>{
         const Selected=e.target.value
      
-        if (Selected==="name") {
-         dispatch(sortByName())
+        if (Selected === "name") {
+          dispatch(sortByName());
+        } else if (Selected === "position") {
+          dispatch(sortByPositions());
+        } else {
+          dispatch(sortByPrice());
         }
-        else if(Selected==="position"){
-         dispatch(sortByPositions());
-         
-        }
-        else {
-         dispatch(sortByPrice())
-        }
-        
-        
-        
-        
+          console.log(Selected);
+          
+
          }
+
    
 
-    return(
-        <>
-            <div className="toolbar">
-      <div className="size">
-          <div className="icons">
-            
-                   <i  onClick={()=>dispatch(setVeiw())} className="fa-solid fa-qrcode grid"></i>
-                  
+    return (
+      <>
+        <div className="toolbar">
+          <div className="size">
+            <div className="icons">
+              <i
+                onClick={() => dispatch(setVeiw())}
+                className="fa-solid fa-qrcode grid"
+              ></i>
 
-                    <i onClick ={()=>dispatch(getveiw())} className="fa-solid fa-bars list"></i>
-                  
-              
-         
-         
+              <i
+                onClick={() => dispatch(getveiw())}
+                className="fa-solid fa-bars list"
+              ></i>
+            </div>
+            <p>
+              Items
+              <span>1-12 of 75</span>
+            </p>
           </div>
-          <p>Items
-          <span>1-12 of 75</span>
-          </p>
-      </div>
-      <div className="tool">
-     <p className="sort" >Sort By</p>
-      <select id="pad" onClick={handleSort} >
-          <option value="position" >Position</option>
-          <option value="name" >Product Name</option>
-          <option value="price">Price</option>
-          
-      </select>
-      <i className="fa-solid fa-arrow-up-long"></i>
-      </div>
-  </div>
-  {
-      veiw ==true?
-      <>
-  <Products/>
-  </>:
-      <>
-       <Listveiw/>
+          <div className="tool">
+            <p className="sort">Sort By</p>
+            <select id="pad" onChange={handleSort}>
+              <option value="position">Position</option>
+              <option value="name">Product Name</option>
+              <option value="price">Price</option>
+            </select>
+            <i className="fa-solid fa-arrow-up-long"></i>
+          </div>
+        </div>
+
+        {veiw == true ? (
+          <>
+            <Products />
+          </>
+        ) : (
+          <>
+            <Listveiw />
+          </>
+        )}
       </>
-}
-        </>
-    )
+    );
 }
 export default Menubar;
+

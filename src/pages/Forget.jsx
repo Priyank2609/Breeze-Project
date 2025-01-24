@@ -14,6 +14,5 @@ export default Forget;
 
 
 
-export const Forgt=styled.div`
-    
-`
+
+export const Forgt = styled.div``;

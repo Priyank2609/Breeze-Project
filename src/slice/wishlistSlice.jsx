@@ -6,22 +6,18 @@ const initialState = {
 
 
 const wishlistSlice = createSlice({
-  name: 'wish',
+  name: "wish",
   initialState,
   reducers: {
-   
-     addToWishlist:(state, action)=> {;
-     
-    state.wishlistItems=action.payload
-    
-      
+    addToWishlist: (state, action) => {
+      state.wishlistItems = action.payload;
+    },
+    deleteToWishlist: (state, action) => {
+      state.wishlistItems = state.wishlistItems.filter(
+        (item) => item._id !== action.payload
+      );
+    },
   },
-  deleteToWishlist:(state,action)=>{
-     state.wishlistItems = state.wishlistItems.filter(
-        (item) => item._id !== action.payload 
-      ); 
-  }
-}
 });
 
 
